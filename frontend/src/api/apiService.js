@@ -134,10 +134,6 @@ export const notebookAPI = {
         const response = await axiosInstance.post('/api/notebooks/list', {});
         return response.data;
     },
-    update: async (data) => {
-        const response = await axiosInstance.post('/api/notebooks/update', data);
-        return response.data;
-    },
     delete: async (notebookId) => {
         const response = await axiosInstance.post('/api/notebooks/delete', { notebookId });
         return response.data;
@@ -150,20 +146,16 @@ export const pageAPI = {
         const response = await axiosInstance.post('/api/pages/create', data);
         return response.data;
     },
-    getByNotebook: async (notebookId) => {
-        const response = await axiosInstance.post('/api/pages/list-by-notebook', { notebookId });
-        return response.data;
-    },
-    getAll: async () => {
-        const response = await axiosInstance.post('/api/pages/list', {});
+    getPagesByNotebook: async (notebookId) => {
+        const response = await axiosInstance.post('/api/pages/list', { notebookId });
         return response.data;
     },
     update: async (data) => {
         const response = await axiosInstance.post('/api/pages/update', data);
         return response.data;
     },
-    delete: async (pageId) => {
-        const response = await axiosInstance.post('/api/pages/delete', { pageId });
+    delete: async (pageId, notebookId) => {
+        const response = await axiosInstance.post('/api/pages/delete', { pageId, notebookId });
         return response.data;
     }
 };

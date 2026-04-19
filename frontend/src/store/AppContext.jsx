@@ -1,7 +1,8 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { goalAPI, projectAPI, taskAPI, habitAPI, dailyPlanAPI, statsAPI } from '../api/apiService';
+import { goalAPI, projectAPI, taskAPI, habitAPI, dailyPlanAPI, statsAPI, notebookAPI, pageAPI } from '../api/apiService';
 import { showToast } from '../utils/toastHelper';
+import { useRef } from 'react';
 
 const AppContext = createContext();
 
@@ -40,6 +41,9 @@ export const AppProvider = ({ children }) => {
       localStorage.setItem('wisemind_user', JSON.stringify(user));
     }
   }, [user]);
+
+  const [notebooks, setNotebooks] = useState([]);
+  const [pages, setPages] = useState([]);
 
   // HYBRID: Load initial data from localStorage or use defaults (fallback)
   const [goals, setGoals] = useState(() => {
@@ -105,12 +109,13 @@ export const AppProvider = ({ children }) => {
       setLoading(true);
 
       // Fetch all data from backend
-      const [goalsRes, projectsRes, tasksRes, habitsRes, dailyPlanRes] = await Promise.all([
+      const [goalsRes, projectsRes, tasksRes, habitsRes, dailyPlanRes, notebooksRes] = await Promise.all([
         goalAPI.getAll(),
         projectAPI.getAll(),
         taskAPI.getAll(),
         habitAPI.getAll(),
-        dailyPlanAPI.getToday()
+        dailyPlanAPI.getToday(),
+        notebookAPI.getAll(),
       ]);
 
       // Update state with backend data
@@ -158,6 +163,14 @@ export const AppProvider = ({ children }) => {
           }))
         };
         setDailyPlan(planData);
+      }
+
+      if (notebooksRes.success) {
+        const data = notebooksRes.notebooks.map(n => ({
+          ...n,
+          id: n._id
+        }));
+        setNotebooks(data);
       }
 
       setLoading(false);
@@ -521,6 +534,71 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+
+  const createNotebook = async (name) => {
+    const res = await notebookAPI.create({ name });
+    if (res.success) {
+      setNotebooks(prev => [...prev, { ...res.notebook, id: res.notebook._id }]);
+    }
+  };
+
+  const deleteNotebook = async (notebookId) => {
+    const res = await notebookAPI.delete(notebookId);
+    if (res.success) {
+      setNotebooks(prev => prev.filter(n => n.id !== notebookId));
+    }
+  };
+
+  const loadPages = async (notebookId) => {
+    const res = await pageAPI.getPagesByNotebook(notebookId);
+    if (res.success) {
+      const data = res.pages.map(p => ({
+        ...p,
+        id: p._id
+      }));
+      setPages(data);
+    }
+  };
+
+  const createPage = async (notebookId) => {
+    const res = await pageAPI.create({ notebookId });
+    if (res.success) {
+      setPages(prev => [...prev, { ...res.page, id: res.page._id }]);
+    }
+  };
+
+  // const updatePage = async (pageId, content) => {
+  //   const res = await pageAPI.update({ pageId, content });
+  //   if (res.success) {
+  //     setPages(prev =>
+  //       prev.map(p => p.id === pageId ? { ...p, content } : p)
+  //     );
+  //   }
+  // };
+
+
+  const updateTimeout = useRef(null);
+  const updatePage = (pageId, content) => {
+  setPages(prev =>
+    prev.map(p => p.id === pageId ? { ...p, content } : p)
+  );
+
+  if (updateTimeout.current) clearTimeout(updateTimeout.current);
+
+  updateTimeout.current = setTimeout(async () => {
+    await pageAPI.update({ pageId, content });
+  }, 500);
+};
+
+  const deletePage = async (pageId, notebookId) => {
+    const res = await pageAPI.delete(pageId, notebookId);
+    if (res.success) {
+      setPages(prev => prev.filter(p => p.id !== pageId));
+    }
+  };
+
+
+
   const calculateGoalProgress = (goalId) => {
     const goalTasks = tasks.filter(task => task.goalId === goalId);
     if (goalTasks.length === 0) return 0;
@@ -838,6 +916,14 @@ export const AppProvider = ({ children }) => {
     updateHabit,
     handleCompleteHabit,
     deleteHabit,
+    notebooks,
+    pages,
+    createNotebook,
+    deleteNotebook,
+    loadPages,
+    createPage,
+    updatePage,
+    deletePage,
     updateScores,
     setDailyTasksList,
     addToDailyPlan,

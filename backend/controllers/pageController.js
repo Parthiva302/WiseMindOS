@@ -121,7 +121,11 @@ export const createPage = async (req, res) => {
     const userId = req.body.userId;
     const { notebookId } = req.body;
 
-    const notebook = await notebookModel.findById(notebookId);
+    if (!notebookId) {
+      return res.json({ success: false, message: "NotebookId required" });
+    }
+
+    const notebook = await notebookModel.findOne({ _id: notebookId, userId });
     if (!notebook) {
       return res.json({ success: false, message: "Notebook not found" });
     }
@@ -139,7 +143,6 @@ export const createPage = async (req, res) => {
 
     await page.save();
 
-    // update page count
     notebook.pageCount += 1;
     await notebook.save();
 
@@ -151,13 +154,14 @@ export const createPage = async (req, res) => {
 };
 
 
-// ➤ Get pages of a notebook
+// ➤ Get pages of a notebook (with user check)
 export const getPages = async (req, res) => {
   try {
     const { notebookId } = req.body;
+    const userId = req.body.userId;
 
     const pages = await pageModel
-      .find({ notebookId })
+      .find({ notebookId, userId })
       .sort({ order: 1 });
 
     res.json({ success: true, pages });
@@ -168,23 +172,28 @@ export const getPages = async (req, res) => {
 };
 
 
-// ➤ Update Page Content (max 10KB)
+// ➤ Update Page Content (max 10KB + user check)
 export const updatePage = async (req, res) => {
   try {
     const { pageId, content } = req.body;
+    const userId = req.body.userId;
 
     if (content.length > 10000) {
       return res.json({ success: false, message: "Max 10KB content allowed" });
     }
 
-    const page = await pageModel.findByIdAndUpdate(
-      pageId,
+    const page = await pageModel.findOneAndUpdate(
+      { _id: pageId, userId },
       {
         content,
         updatedAt: Date.now()
       },
       { new: true }
     );
+
+    if (!page) {
+      return res.json({ success: false, message: "Page not found" });
+    }
 
     res.json({ success: true, page });
 
@@ -194,15 +203,26 @@ export const updatePage = async (req, res) => {
 };
 
 
-// ➤ Delete Page
+// ➤ Delete Page (with user check)
 export const deletePage = async (req, res) => {
   try {
     const { pageId, notebookId } = req.body;
+    const userId = req.body.userId;
 
-    await pageModel.findByIdAndDelete(pageId);
+    const page = await pageModel.findOneAndDelete({
+      _id: pageId,
+      userId
+    });
 
-    // decrease page count
-    const notebook = await notebookModel.findById(notebookId);
+    if (!page) {
+      return res.json({ success: false, message: "Page not found" });
+    }
+
+    const notebook = await notebookModel.findOne({
+      _id: notebookId,
+      userId
+    });
+
     if (notebook && notebook.pageCount > 0) {
       notebook.pageCount -= 1;
       await notebook.save();

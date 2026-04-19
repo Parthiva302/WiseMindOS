@@ -233,23 +233,34 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Plus, Trash2, Search, Pencil, Book, FileText, Edit } from "lucide-react";
+import { useApp } from "../store/AppContext";
 
 const Bag = () => {
+  const {
+    notebooks,
+    pages,
+    createNotebook,
+    deleteNotebook,
+    loadPages,
+    createPage,
+    updatePage,
+    deletePage
+  } = useApp();
   const [search, setSearch] = useState("");
   const [pageSearch, setPageSearch] = useState("");
   const [editingNotebook, setEditingNotebook] = useState(null);
 
   const [view, setView] = useState("editor"); // NEW
 
-  const [bag, setBag] = useState(() => {
-    const saved = localStorage.getItem("wisemind_bag");
-    return saved
-      ? JSON.parse(saved)
-      : {
-        name: "My Bag",
-        notebooks: []
-      };
-  });
+  // const [bag, setBag] = useState(() => {
+  //   const saved = localStorage.getItem("wisemind_bag");
+  //   return saved
+  //     ? JSON.parse(saved)
+  //     : {
+  //       name: "My Bag",
+  //       notebooks: []
+  //     };
+  // });
 
   const [activeNotebook, setActiveNotebook] = useState(null);
   const [activePage, setActivePage] = useState(null);
@@ -271,28 +282,33 @@ const Bag = () => {
   //   setBag({ ...bag, notebooks: updated });
   // };
 
+  // const updateContent = (value) => {
+  //   setBag(prev => {
+  //     const updated = prev.notebooks.map(nb => {
+  //       if (nb.id === activeNotebook) {
+  //         return {
+  //           ...nb,
+  //           pages: nb.pages.map(p =>
+  //             p.id === activePage ? { ...p, content: value } : p
+  //           )
+  //         };
+  //       }
+  //       return nb;
+  //     });
+
+  //     return { ...prev, notebooks: updated };
+  //   });
+  // };
+
   const updateContent = (value) => {
-  setBag(prev => {
-    const updated = prev.notebooks.map(nb => {
-      if (nb.id === activeNotebook) {
-        return {
-          ...nb,
-          pages: nb.pages.map(p =>
-            p.id === activePage ? { ...p, content: value } : p
-          )
-        };
-      }
-      return nb;
-    });
-
-    return { ...prev, notebooks: updated };
-  });
-};
+    if (!activePage) return;
+    updatePage(activePage, value);
+  };
 
 
-  useEffect(() => {
-    localStorage.setItem("wisemind_bag", JSON.stringify(bag));
-  }, [bag]);
+  // useEffect(() => {
+  //   localStorage.setItem("wisemind_bag", JSON.stringify(bag));
+  // }, [bag]);
 
   // useEffect(() => {
   //   if (currentPage) {
@@ -300,38 +316,48 @@ const Bag = () => {
   //   }
   // }, [activePage, activeNotebook]);
 
+  // const addNotebook = () => {
+  //   const newNotebook = {
+  //     id: Date.now(),
+  //     name: "New Notebook",
+  //     pages: []
+  //   };
+  //   setBag({ ...bag, notebooks: [...bag.notebooks, newNotebook] });
+  // };
+
   const addNotebook = () => {
-    const newNotebook = {
-      id: Date.now(),
-      name: "New Notebook",
-      pages: []
-    };
-    setBag({ ...bag, notebooks: [...bag.notebooks, newNotebook] });
+    createNotebook("New Notebook");
   };
 
   // ✅ UPDATED: Add page with numbering
-  const addPage = () => {
+  // const addPage = () => {
+  //   if (!activeNotebook) return;
+
+  //   const updated = bag.notebooks.map(nb => {
+  //     if (nb.id === activeNotebook) {
+  //       const pageNumber = nb.pages.length + 1;
+  //       return {
+  //         ...nb,
+  //         pages: [
+  //           ...nb.pages,
+  //           {
+  //             id: Date.now(),
+  //             content: "",
+  //             title: `Page ${pageNumber}`
+  //           }
+  //         ]
+  //       };
+  //     }
+  //     return nb;
+  //   });
+
+  //   setBag({ ...bag, notebooks: updated });
+  // };
+
+  const addPage = async() => {
     if (!activeNotebook) return;
-
-    const updated = bag.notebooks.map(nb => {
-      if (nb.id === activeNotebook) {
-        const pageNumber = nb.pages.length + 1;
-        return {
-          ...nb,
-          pages: [
-            ...nb.pages,
-            {
-              id: Date.now(),
-              content: "",
-              title: `Page ${pageNumber}`
-            }
-          ]
-        };
-      }
-      return nb;
-    });
-
-    setBag({ ...bag, notebooks: updated });
+    await createPage(activeNotebook);
+    await loadPages(activeNotebook);
   };
 
   // const updateContent = (value) => {
@@ -350,8 +376,11 @@ const Bag = () => {
   //   setBag({ ...bag, notebooks: updated });
   // };
 
-  const currentNotebook = bag.notebooks.find(nb => nb.id === activeNotebook);
-  const currentPage = currentNotebook?.pages.find(p => p.id === activePage);
+  // const currentNotebook = bag.notebooks.find(nb => nb.id === activeNotebook);
+  // const currentPage = currentNotebook?.pages.find(p => p.id === activePage);
+
+  const currentNotebook = notebooks.find(nb => nb.id === activeNotebook);
+  const currentPage = pages.find(p => p.id === activePage);
 
   // =========================
   // 🔥 VIEWS
@@ -374,7 +403,7 @@ const Bag = () => {
       />
 
       <div className="flex-1 overflow-y-auto space-y-2">
-        {bag.notebooks
+        {notebooks
           .filter(nb =>
             nb.name.toLowerCase().includes(search.toLowerCase())
           )
@@ -384,6 +413,8 @@ const Bag = () => {
               whileHover={{ scale: 1.02 }}
               onClick={() => {
                 setActiveNotebook(nb.id);
+                loadPages(nb.id);
+                setActivePage(null);
                 setView("pages");
               }}
               className={`p-3 rounded-lg cursor-pointer ${activeNotebook === nb.id
@@ -394,15 +425,15 @@ const Bag = () => {
               {editingNotebook === nb.id ? (
                 <input
                   value={nb.name}
-                  onChange={(e) => {
-                    const updated = bag.notebooks.map(n =>
-                      n.id === nb.id
-                        ? { ...n, name: e.target.value }
-                        : n
-                    );
-                    setBag({ ...bag, notebooks: updated });
-                  }}
-                  onBlur={() => setEditingNotebook(null)}
+                  // onChange={(e) => {
+                  //   const updated = notebooks.map(n =>
+                  //     n.id === nb.id
+                  //       ? { ...n, name: e.target.value }
+                  //       : n
+                  //   );
+                  //   setBag({ ...bag, notebooks: updated });
+                  // }}
+                  // onBlur={() => setEditingNotebook(null)}
                   className="bg-transparent text-white outline-none"
                   autoFocus
                 />
@@ -422,12 +453,13 @@ const Bag = () => {
                       className="text-red-400"
                       onClick={(e) => {
                         e.stopPropagation();
-                        setBag({
-                          ...bag,
-                          notebooks: bag.notebooks.filter(
-                            n => n.id !== nb.id
-                          )
-                        });
+                        // setBag({
+                        //   ...bag,
+                        //   notebooks: bag.notebooks.filter(
+                        //     n => n.id !== nb.id
+                        //   )
+                        // });
+                        deleteNotebook(nb.id);
                         setActiveNotebook(null);
                         setActivePage(null);
                         setView("notebooks");
@@ -471,7 +503,7 @@ const Bag = () => {
         />
 
         <div className="flex-1 overflow-y-auto space-y-2">
-          {currentNotebook.pages
+          {pages
             .filter(p =>
               p.title
                 ?.toLowerCase()
@@ -496,16 +528,17 @@ const Bag = () => {
                     className="text-red-400"
                     onClick={(e) => {
                       e.stopPropagation();
-                      const updated = bag.notebooks.map(nb => {
-                        if (nb.id === activeNotebook) {
-                          return {
-                            ...nb,
-                            pages: nb.pages.filter(pg => pg.id !== p.id)
-                          };
-                        }
-                        return nb;
-                      });
-                      setBag({ ...bag, notebooks: updated });
+                      // const updated = notebooks.map(nb => {
+                      //   if (nb.id === activeNotebook) {
+                      //     return {
+                      //       ...nb,
+                      //       pages: nb.pages.filter(pg => pg.id !== p.id)
+                      //     };
+                      //   }
+                      //   return nb;
+                      // });
+                      // setBag({ ...bag, notebooks: updated });
+                      deletePage(p.id, activeNotebook);
                       if (activePage === p.id) setActivePage(null);
                     }}
                   />
@@ -573,49 +606,49 @@ const Bag = () => {
         {view === "notebooks" && <NotebooksView />}
         {view === "pages" && <PagesView />}
         {view === "editor" && (<div className="h-full flex flex-col">
-      <h2 className="text-white text-lg font-semibold mb-3">
-        {currentNotebook?.name} {currentPage ? `> ${currentPage.title}` : ""}
-      </h2>
+          <h2 className="text-white text-lg font-semibold mb-3">
+            {currentNotebook?.name} {currentPage ? `> ${currentPage.title}` : ""}
+          </h2>
 
-      {currentPage ? (
-        <>
-          <div className="flex gap-2 mb-3">
-            <button
-              onClick={() =>
-                updateContent(currentPage.content + "**bold**")
-              }
-              className="text-xs px-2 py-1 bg-gray-700 rounded"
-            >
-              B
-            </button>
-            <button
-              onClick={() =>
-                updateContent(currentPage.content + "_italic_")
-              }
-              className="text-xs px-2 py-1 bg-gray-700 rounded"
-            >
-              I
-            </button>
-          </div>
+          {currentPage ? (
+            <>
+              <div className="flex gap-2 mb-3">
+                <button
+                  onClick={() =>
+                    updateContent(currentPage.content + "**bold**")
+                  }
+                  className="text-xs px-2 py-1 bg-gray-700 rounded"
+                >
+                  B
+                </button>
+                <button
+                  onClick={() =>
+                    updateContent(currentPage.content + "_italic_")
+                  }
+                  className="text-xs px-2 py-1 bg-gray-700 rounded"
+                >
+                  I
+                </button>
+              </div>
 
-          {/* <textarea
+              {/* <textarea
             value={currentPage.content}
             onChange={(e) => updateContent(e.target.value)}
             className="flex-1 w-full bg-gray-800 text-white rounded-lg p-4 focus:outline-none resize-none"
           /> */}
-          <textarea
-            value={currentPage.content}
-            onChange={(e) => updateContent(e.target.value)}
-            // onBlur={() => updateContent(editorContent)}
-            className="flex-1 w-full bg-gray-800 text-white rounded-lg p-4 focus:outline-none resize-none"
-          />
-        </>
-      ) : (
-        <div className="flex items-center justify-center flex-1 text-gray-400">
-          Select a page to start writing...
-        </div>
-      )}
-    </div>)}
+              <textarea
+                value={currentPage.content}
+                onChange={(e) => updateContent(e.target.value)}
+                // onBlur={() => updateContent(editorContent)}
+                className="flex-1 w-full bg-gray-800 text-white rounded-lg p-4 focus:outline-none resize-none"
+              />
+            </>
+          ) : (
+            <div className="flex items-center justify-center flex-1 text-gray-400">
+              Select a page to start writing...
+            </div>
+          )}
+        </div>)}
       </div>
 
       {/* 🔥 Bottom Navigation */}

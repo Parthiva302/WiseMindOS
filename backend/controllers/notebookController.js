@@ -91,12 +91,17 @@
 // export { createNotebook, getNotebooks, updateNotebook, deleteNotebook };
 
 import notebookModel from "../models/notebookModel.js";
+import pageModel from "../models/pageModel.js";
 
 // ➤ Create Notebook (max 40)
 export const createNotebook = async (req, res) => {
   try {
     const userId = req.body.userId;
     const { name } = req.body;
+
+    if (!name) {
+      return res.json({ success: false, message: "Name required" });
+    }
 
     const count = await notebookModel.countDocuments({ userId });
     if (count >= 40) {
@@ -136,12 +141,23 @@ export const getNotebooks = async (req, res) => {
 };
 
 
-// ➤ Delete Notebook
+// ➤ Delete Notebook (with user check + cascade delete)
 export const deleteNotebook = async (req, res) => {
   try {
     const { notebookId } = req.body;
+    const userId = req.body.userId;
 
-    await notebookModel.findByIdAndDelete(notebookId);
+    const notebook = await notebookModel.findOneAndDelete({
+      _id: notebookId,
+      userId
+    });
+
+    if (!notebook) {
+      return res.json({ success: false, message: "Notebook not found" });
+    }
+
+    // delete all pages of this notebook
+    await pageModel.deleteMany({ notebookId });
 
     res.json({ success: true });
 
