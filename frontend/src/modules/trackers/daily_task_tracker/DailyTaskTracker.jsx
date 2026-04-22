@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Calendar, Clock, Plus, ListTodo, X, CheckCircle2, CalendarSyncIcon, CalendarClock } from 'lucide-react';
+import { Calendar, Clock, Plus, ListTodo, X, CheckCircle2, CalendarSyncIcon, CheckSquare, CalendarClock } from 'lucide-react';
 import { useApp } from '../../../store/AppContext';
 import Card from '../../../components/Card';
 import DonutChart from '../../../components/DonutChart';

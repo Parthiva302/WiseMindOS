@@ -169,6 +169,7 @@ const Dashboard = () => {
               title="Productivity"
               value={`${productivityScore}%`}
               icon={<Zap size={24} />}
+              // trend={{positive: false, value: 20}}
               data-testid="productivity-score-card"
             />
             <StatCard
@@ -185,7 +186,7 @@ const Dashboard = () => {
             />
             <StatCard
               title="Tasks Today"
-              value={`${tasks.filter(t => t.completed).length}/${tasks.length}`}
+              value={`${dailyPlan?.plannedTasks.filter(t => t.completed).length}/${dailyPlan?.plannedTasks.length}`}
               icon={<CheckCircle size={24} />}
               data-testid="tasks-today-card"
             />
