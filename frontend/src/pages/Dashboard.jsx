@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { TrendingUp, Target, CheckCircle, Zap, ArrowRight, UserPlus2, Camera, CalendarDays, Star, AlertTriangle, ArrowRightIcon } from 'lucide-react';
+import { TrendingUp, Target, CheckCircle, Zap, ArrowRight, UserPlus2, Camera, CalendarDays, Star, AlertTriangle, ArrowRightIcon, UserCog, UserPen } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import Card from '../components/Card';
 import StatCard from '../components/StatCard';
@@ -115,6 +115,9 @@ const Dashboard = () => {
           <Card className="mb-6 w-full  relative overflow-hidden bg-white/15 backdrop-blur-xl border-20 border-black/20 shadow-[0_0_40px_rgba(99,102,241,0.2)]">
 
             <div className="rounded w-full mb-6 p-4 flex flex-col items-center">
+              <div className='w-full flex items-end justify-end'>
+                <button className='bg-white/10 hover:bg-white/15 cursor-pointer border flex gap-2 border-white/15 hover:border-white/25 px-4 py-2 text-white rounded-2xl default-bold'> <UserPen size={20}/> <span>Edit</span></button>
+              </div>
               {/* Image div  */}
               <div className='h-30 w-30 rounded-full relative group border-6 border-black/15 shadow-[0_0_40px_rgba(99,102,241,0.2)] shrink-0'>
                 <img src={user.profile_pic || profile_pic} className='w-full h-full object-cover rounded-full' alt="" />
@@ -233,6 +236,7 @@ const Dashboard = () => {
           </Card>
         </div>
 
+        {(importantTasks.length > 0 || behindTasks.length > 0) && (
         <div className='border-orange-500/30 bg-orange-500/5 backdrop-blur-lg rounded-2xl p-6 shadow-lg items-stretch mb-4'>
           <div className='flex gap-2 flex-col lg:flex-row'>
             {/* Important Tasks */}
@@ -257,7 +261,8 @@ const Dashboard = () => {
               </div>
             )}
 
-            <div className="self-stretch border-2 border-red-500/50 rounded-full opacity-0 lg:opacity-100"></div>
+            {importantTasks.length > 0 && behindTasks.length > 0 && (
+            <div className="self-stretch border-2 border-red-500/50 rounded-full opacity-0 lg:opacity-100"></div>)}
 
             {/* Behind Tasks */}
             {behindTasks.length > 0 && (
@@ -292,7 +297,7 @@ const Dashboard = () => {
               </GradientButton>
             </Link>
           </div>
-        </div>
+        </div>)}
 
         {/* Today's Tasks */}
         {hasPlannedTasks ? (
