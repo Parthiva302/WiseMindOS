@@ -11,20 +11,43 @@ const saveDailyStats = async (req, res) => {
     }
 
     // ✅ Normalize date (IMPORTANT for unique index)
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const start = new Date();
+    start.setUTCHours(0, 0, 0, 0);
+
+    const end = new Date();
+    end.setUTCHours(23, 59, 59, 999);
 
     await dailyStatsModel.findOneAndUpdate(
-      { userId, date: today },
+      {
+        userId,
+        date: { $gte: start, $lte: end }
+      },
       {
         productivity,
-        discipline
+        discipline,
+        date: start // always save normalized
       },
       {
         upsert: true,
         new: true
       }
     );
+    
+    // const today = new Date();
+    // today.setHours(0, 0, 0, 0);
+
+    // await dailyStatsModel.findOneAndUpdate(
+    //   { userId, date: today },
+    //   {
+    //     productivity,
+    //     discipline
+    //   },
+    //   {
+    //     upsert: true,
+    //     new: true
+    //   }
+    // );
+
 
     res.json({ success: true });
 

@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { LineChart, Line, BarChart, Bar, Legend, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, BarChart, Bar, Legend, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
 import { TrendingUp, Target, CheckCircle, Zap, ArrowRight, UserPlus2, Camera, CalendarDays, Star, AlertTriangle, ArrowRightIcon, UserCog, UserPen, LucideTrophy } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import Card from '../components/Card';
@@ -256,11 +256,12 @@ const Dashboard = () => {
               <DonutChart value={avgDiscipline} size={140} color="#10B981" label="This Week" />
             </div>
           </Card>
+        </div>
 
-          <Card className="bg-white/5 backdrop-blur-lg border border-white/10 hover:scale-[1.02] transition-all duration-300">
-            <h3 className="text-lg font-semibold text-white mb-4">Weekly Trend</h3>
-            <ResponsiveContainer width="100%" height={140}>
-              {/* <LineChart data={weeklyData}>
+        <Card className="bg-transparent border border-white/10 mb-6">
+          <h3 className="text-lg font-semibold text-white mb-4">Weekly Trend</h3>
+          <ResponsiveContainer width="100%" height={200}>
+            {/* <LineChart data={weeklyData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                 <XAxis dataKey="name" stroke="#9ca3af" style={{ fontSize: '12px' }} />
                 <YAxis stroke="#9ca3af" style={{ fontSize: '12px' }} />
@@ -275,48 +276,70 @@ const Dashboard = () => {
                 <Line type="monotone" dataKey="productivity" stroke="#6366f1" strokeWidth={2} />
                 <Line type="monotone" dataKey="discipline" stroke="#10b981" strokeWidth={2} />
               </LineChart> */}
-              <BarChart data={weeklyData} barGap={6}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+            <BarChart data={weeklyData} margin={{ top: 20, right: 0, left: -10, bottom: 0 }} barGap={15} >
+              {/* <CartesianGrid strokeDasharray="3 3" stroke="#374151" /> */}
 
-                <XAxis
-                  dataKey="name"
-                  stroke="#9ca3af"
-                  style={{ fontSize: '12px' }}
-                />
+              <XAxis
+                dataKey="name"
+                stroke="#9ca3af"
+                style={{ fontSize: '12px' }}
+                axisLine={false}
+                tickLine={false}
+              />
 
-                <YAxis
-                  stroke="#9ca3af"
-                  style={{ fontSize: '12px' }}
-                />
+              <YAxis
+                // stroke="#9ca3af"
+                // style={{ fontSize: '12px' }}
+                hide
+              />
 
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#1f2937',
-                    border: '1px solid #374151',
-                    borderRadius: '8px',
-                    fontSize: '12px'
-                  }}
-                />
+              <Tooltip
+                cursor={{ fill: "transparent" }}
+                contentStyle={{
+                  backgroundColor: '#1f2937',
+                  border: '1px solid #374151',
+                  borderRadius: '8px',
+                  // fontSize: '12px'
+                }}
+              />
 
-                <Legend />
+              <Legend />
 
-                {/* Productivity Bar */}
-                <Bar
-                  dataKey="productivity"
-                  fill="#6366f1"
-                  radius={[6, 6, 0, 0]}
-                />
+              {/* Productivity Bar */}
+              {/* <Bar
+                dataKey="productivity"
+                fill="#6366f1"
+                radius={[6, 6, 0, 0]}
+              /> */}
 
-                {/* Discipline Bar */}
-                <Bar
-                  dataKey="discipline"
-                  fill="#10b981"
-                  radius={[6, 6, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </Card>
-        </div>
+              {/* Discipline Bar */}
+              {/* <Bar
+                dataKey="discipline"
+                fill="#10b981"
+                radius={[6, 6, 0, 0]}
+              /> */}
+
+              <Bar
+                dataKey="productivity"
+                fill="#6366f1"
+                radius={[10, 10, 10, 10]}
+                barSize={8}
+              >
+                <LabelList dataKey="productivity" position="top" fill="#6366f1" style={{ fontSize: '12px' }}/>
+              </Bar>
+
+              <Bar
+                dataKey="discipline"
+                fill="#10b981"
+                radius={[10, 10, 10, 10]}
+                barSize={8}
+              >
+                <LabelList dataKey="discipline" position="top" fill="#10b981" style={{ fontSize: '12px' }}/>
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
+
 
         {(importantTasks.length > 0 || behindTasks.length > 0) && (
           <div className='border-orange-500/30 bg-orange-500/5 backdrop-blur-lg rounded-2xl p-6 shadow-lg items-stretch mb-4'>
