@@ -11,7 +11,7 @@ import ProjectCard from '../components/ProjectCard';
 import TaskItem from '../components/TaskItem';
 import HabitCard from '../components/HabitCard';
 import GradientButton from '../components/GradientButton';
-import { motion } from 'framer-motion'
+import { motion as Motion } from 'framer-motion'
 import { useMemo } from 'react';
 import profile_pic from '../assets/profile_pic.svg'
 import { useState, useEffect } from 'react';
@@ -169,20 +169,20 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black pb-20 px-4 pt-6 relative overflow-hidden">
-      <motion.div
+      <Motion.div
         className="absolute top-10 left-10 w-72 h-72 bg-purple-500 rounded-full blur-3xl opacity-20"
         animate={{ x: [0, 40, 0], y: [0, 20, 0] }}
         transition={{ duration: 10, repeat: Infinity }}
       />
 
-      <motion.div
+      <Motion.div
         className="absolute bottom-10 right-10 w-72 h-72 bg-indigo-500 rounded-full blur-3xl opacity-20"
         animate={{ x: [0, -40, 0], y: [0, -20, 0] }}
         transition={{ duration: 12, repeat: Infinity }}
       />
       <div className="max-w-6xl mx-auto">
         {/* Welcome Section */}
-        <motion.div
+        <Motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -191,16 +191,28 @@ const Dashboard = () => {
 
             <div className="rounded w-full mb-6 flex flex-col items-center">
               <div className='w-full flex items-end justify-end'>
-                <button onClick={() => setShowEditProfile(true)} className='bg-white/10 hover:bg-white/15 cursor-pointer border flex gap-2 border-white/15 hover:border-white/25 hover:translate-y-0.5 px-3 py-3 rounded-full text-white default-bold shadow-[0_0_10px_rgba(255,255,255,0.2)] hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all duration-300'> <UserPen size={20} /></button>
+                <button
+                  type="button"
+                  onClick={() => setShowEditProfile(true)}
+                  aria-label="Edit profile details"
+                  className='bg-white/10 hover:bg-white/15 cursor-pointer border flex gap-2 border-white/15 hover:border-white/25 hover:translate-y-0.5 px-3 py-3 rounded-full text-white default-bold shadow-[0_0_10px_rgba(255,255,255,0.2)] hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900'
+                >
+                  <UserPen aria-hidden="true" size={20} />
+                </button>
               </div>
               {/* Image div  */}
               <div className='h-30 w-30 rounded-full relative group border-6 border-black/15 shadow-[0_0_40px_rgba(99,102,241,0.2)] shrink-0'>
-                <img src={user.profile_picture || profile_pic} className='w-full h-full object-cover rounded-full' alt="" />
-                <div onClick={()=>setShowEditProfilePic(true)} className='w-full h-full bg-black/50 absolute rounded-full inset-0 cursor-pointer opacity-0 z-10 group-hover:opacity-100'>
+                <img src={user.profile_picture || profile_pic} className='w-full h-full object-cover rounded-full' alt={`${user.name || 'User'} profile`} />
+                <button
+                  type="button"
+                  onClick={()=>setShowEditProfilePic(true)}
+                  aria-label="Change profile picture"
+                  className='w-full h-full bg-black/50 absolute rounded-full inset-0 cursor-pointer opacity-0 z-10 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900'
+                >
                   <div className='h-full w-full flex items-center justify-center'>
-                    <Camera size={18} className='text-white' />
+                    <Camera aria-hidden="true" size={18} className='text-white' />
                   </div>
-                </div>
+                </button>
                 <div className='border-6 h-5 w-5 rounded-full z-10 bottom-1 absolute right-1 border-green-400'></div>
               </div>
               <div className='flex flex-col items-center'>
@@ -230,7 +242,7 @@ const Dashboard = () => {
 
           </Card>
 
-        </motion.div>
+        </Motion.div>
 
 
         <div className='rounded-2xl p-6 mb-6 bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_0_30px_rgba(99,102,241,0.15)]'>
@@ -408,12 +420,12 @@ const Dashboard = () => {
                   <p className="text-gray-400 text-sm mb-4">High Priority Tasks, Complete these first.</p>
                   <div className="space-y-3">
                     {importantTasks.slice(0, 4).map(task => (
-                      <motion.div key={task.id} whileHover={{ scale: 1.005 }}>
+                      <Motion.div key={task.id} whileHover={{ scale: 1.005 }}>
                         <TaskItem
                           task={task}
                           onToggle={toggleTaskCompletion}
                         />
-                      </motion.div>
+                      </Motion.div>
                     ))}
                   </div>
                 </div>
@@ -431,12 +443,12 @@ const Dashboard = () => {
                   <p className="text-gray-400 text-sm mb-4">Act fast on these tasks, You are already running late.</p>
                   <div className="space-y-3">
                     {behindTasks.slice(0, 4).map(task => (
-                      <motion.div key={task.id} whileHover={{ scale: 1.005 }}>
+                      <Motion.div key={task.id} whileHover={{ scale: 1.005 }}>
                         <TaskItem
                           task={task}
                           onToggle={toggleTaskCompletion}
                         />
-                      </motion.div>
+                      </Motion.div>
                     ))}
                   </div>
                 </div>
@@ -468,7 +480,7 @@ const Dashboard = () => {
             </div>
             <div className="space-y-3">
               {pendingPlannedTasks.slice(0, 5).map((item, index) => (
-                <motion.div
+                <Motion.div
                   key={item.id}
                   whileHover={{ scale: 1.02 }}
                   initial={{ opacity: 0, y: 10 }}
@@ -511,18 +523,20 @@ const Dashboard = () => {
                         {/* Completion Toggle */}
                         <button
                           onClick={() => toggleDailyPlanTaskCompletion(item.id)}
+                          aria-label={`${item.completed ? 'Mark incomplete' : 'Mark complete'}: ${item.title}`}
+                          aria-pressed={item.completed}
                           className={`p-2 rounded-lg transition-all ${item.completed
                             ? 'bg-green-500/20 text-green-400'
                             : 'bg-gray-700/50 text-gray-400 hover:bg-green-500/20 hover:text-green-400'
-                            }`}
+                            } focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900`}
                           data-testid={`toggle-planned-task-${item.id}`}
                         >
-                          <CheckCircle size={20} />
+                          <CheckCircle aria-hidden="true" size={20} />
                         </button>
                       </div>
                     </div>
                   </div>
-                </motion.div>
+                </Motion.div>
               ))}
               <div className='flex gap-2 w-full h-full justify-between mt-4'>
                 <Link to="/focus-room">
@@ -584,7 +598,7 @@ const Dashboard = () => {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {topGoals.map((goal, index) => (
-                <motion.div
+                <Motion.div
                   key={goal.id}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -596,7 +610,7 @@ const Dashboard = () => {
                     progress={calculateGoalProgress(goal.id)}
                     onClick={() => { }}
                   />
-                </motion.div>
+                </Motion.div>
               ))}
             </div>
           </div>
@@ -615,7 +629,7 @@ const Dashboard = () => {
               {topProjects.map((project, index) => {
                 const linkedGoal = goals.find(g => g.id === project.goalId);
                 return (
-                  <motion.div
+                  <Motion.div
                     key={project.id}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -628,7 +642,7 @@ const Dashboard = () => {
                       linkedGoal={linkedGoal?.title}
                       onClick={() => { }}
                     />
-                  </motion.div>
+                  </Motion.div>
                 );
               })}
             </div>
@@ -646,7 +660,7 @@ const Dashboard = () => {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {topHabits.map((habit, index) => (
-                <motion.div
+                <Motion.div
                   key={habit.id}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -654,7 +668,7 @@ const Dashboard = () => {
                   onClick={() => navigate('/trackers/habits')}
                 >
                   <HabitCard key={habit.id} habit={habit} />
-                </motion.div>
+                </Motion.div>
               ))}
             </div>
           </div>
@@ -695,8 +709,9 @@ const Dashboard = () => {
           />
 
           <div>
-            <label className="block text-gray-300 text-sm font-medium mb-2">Bio</label>
+            <label htmlFor="profile-bio" className="block text-gray-300 text-sm font-medium mb-2">Bio</label>
             <textarea
+              id="profile-bio"
               value={newProfile.bio}
               onChange={(e) => setNewProfile({ ...newProfile, bio: e.target.value })}
               placeholder="Say something intresting about you..."
@@ -721,9 +736,9 @@ const Dashboard = () => {
               <input hidden type="file" accept='image/*' id='profile_picture' className='w-full p-3 border border-gray-200 rounded-lg' onChange={(e) => setNewProfilePic(e.target.files[0])} />
 
               <div className='group/profile relative'>
-                <img src={newProfilePic ? URL.createObjectURL(newProfilePic) : user.profile_picture || profile_pic} alt="" className='w-24 h-24 rounded-full object-cover mt-2' />
+                <img src={newProfilePic ? URL.createObjectURL(newProfilePic) : user.profile_picture || profile_pic} alt="Profile picture preview" className='w-24 h-24 rounded-full object-cover mt-2' />
                 <div className='absolute hidden cursor-pointer group-hover/profile:flex top-0 left-0 right-0 bottom-0 bg-black/20 rounded-full items-center justify-center'>
-                  <Pencil className='w-5 h-5 text-white' />
+                  <Pencil aria-hidden="true" className='w-5 h-5 text-white' />
                 </div>
               </div>
             </label>

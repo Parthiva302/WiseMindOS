@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Home, ListChecks, Focus, Sparkles, Library } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 import { useApp } from '../store/AppContext';
 import { LogOut } from "lucide-react";
 
@@ -26,7 +26,9 @@ const BottomNav = () => {
   ];
 
   return (
-    <nav className="
+    <nav
+      aria-label="Primary app navigation"
+      className="
 fixed bottom-0 left-0 right-0 z-50
 bg-black/40 backdrop-blur-xl 
 border-t border-white/10
@@ -42,15 +44,17 @@ before:bg-gradient-to-r before:from-indigo-500 before:to-purple-500">
             <Link
               key={item.path}
               to={item.path}
+              aria-label={item.label === "LogOut" ? "Log out" : `Go to ${item.label}`}
+              aria-current={isActive ? "page" : undefined}
               onClick={(e) => {
                 if (item.label === "LogOut") {
                   e.preventDefault(); // stop Link navigation
                   logout();           // call your function
                 }
               }}
-              className="flex-1 h-full flex items-center justify-center"
+              className="flex-1 h-full flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-inset"
             >
-              <motion.div
+              <Motion.div
                 className={`
       flex flex-col items-center justify-center 
       px-3 py-1 rounded-xl transition-all duration-300
@@ -64,27 +68,27 @@ before:bg-gradient-to-r before:from-indigo-500 before:to-purple-500">
 
                 {/* Active Background Glow */}
                 {isActive && (
-                  <motion.div
+                  <Motion.div
                     layoutId="nav-pill"
                     className="absolute w-14 h-10 rounded-xl bg-indigo-500/10 blur-md"
                   />
                 )}
 
                 {/* Icon */}
-                <motion.div
+                <Motion.div
                   animate={isActive ? { y: [0, -4, 0] } : {}}
                   transition={{ duration: 0.4 }}
                   className={isActive ? "drop-shadow-[0_0_10px_rgba(99,102,241,0.7)]" : ""}
                 >
-                  <Icon size={22} />
-                </motion.div>
+                  <Icon aria-hidden="true" size={22} />
+                </Motion.div>
 
                 {/* Label */}
                 <span className="text-[10px] mt-1">
                   {item.label}
                 </span>
 
-              </motion.div>
+              </Motion.div>
             </Link>
           );
         })}
