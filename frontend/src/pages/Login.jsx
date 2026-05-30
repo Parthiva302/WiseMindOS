@@ -45,9 +45,11 @@ const Login = () => {
 
     try {
       const response = await authAPI.login({ identifier, password });
+      console.log('Login response:', response);
 
       if (response.success) {
         // Store token
+        console.log('Setting token:', response.token);
         setToken(response.token);
         localStorage.setItem('token', response.token);
 
@@ -59,6 +61,7 @@ const Login = () => {
           bio: response.bio,
           profile_picture: response.profile_picture
         };
+        console.log('Setting user:', userData);
         setUser(userData);
         localStorage.setItem('wisemind_user', JSON.stringify(userData));
 
@@ -78,7 +81,9 @@ const Login = () => {
   };
 
   useEffect(() => {
+      console.log('Login useEffect - token:', token, 'user:', user);
       if (token && user) {
+        console.log('Navigating to dashboard');
         navigate('/dashboard');
       }
   }, [token, user, navigate]);
