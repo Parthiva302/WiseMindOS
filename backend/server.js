@@ -1,10 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-
-import dns from 'node:dns/promises';
-dns.setServers(["1.1.1.1", "8.8.8.8"]);
-
 import connectDB from './config/mongodb.js';
 import userRouter from './routes/userRoute.js';
 import goalRouter from './routes/goalRoute.js';
