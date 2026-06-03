@@ -10,9 +10,10 @@ import Dashboard from './pages/Dashboard';
 import Reports from './pages/Reports';
 import Roadmap from './pages/Roadmap';
 import Features from './pages/Features';
+import Pricing from './pages/Pricing';
 import Careers from './pages/Careers';
 import Contact from './pages/Contact';
-import About from './pages/About'; // <-- IMPORT ABOUT PAGE HERE
+import About from './pages/About';
 
 
 import FutureTwin from './modules/simulator_room/FutureTwin';
@@ -44,10 +45,11 @@ function App() {
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/report" element={<Reports />} />
           <Route path="/features" element={<Features />} />
+          <Route path="/pricing" element={<Pricing />} />
           <Route path="/roadmap" element={<Roadmap />} />
           <Route path="/careers" element={<Careers />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/about" element={<About />} /> {/* <-- ADD ROUTE HERE */}
+          <Route path="/about" element={<About />} />
 
           {/* Protected Routes with AppLayout */}
           <Route element={<AppLayout />}>
