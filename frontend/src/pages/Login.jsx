@@ -48,7 +48,6 @@ const Login = () => {
 
     try {
       const response = await authAPI.login({ identifier, password });
-      console.log('Login response:', response);
 
       if (response.success) {
         // Store token
