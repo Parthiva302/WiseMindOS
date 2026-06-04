@@ -4,6 +4,7 @@ const GradientButton = ({ children, onClick, className = '', type = 'button', di
       type={type}
       onClick={onClick}
       disabled={disabled}
+      aria-disabled={disabled}
       className={`relative overflow-hidden
         bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600
         bg-[length:200%_200%]
