@@ -162,6 +162,7 @@ shadow-[0_0_40px_rgba(99,102,241,0.2)]
             />
 
             <GradientButton
+              aria-busy={isLoading}
               type="submit"
               className="w-full mt-6"
               disabled={isLoading}
@@ -169,11 +170,11 @@ shadow-[0_0_40px_rgba(99,102,241,0.2)]
             >
               {isLoading ? (
                 <>
-                  <svg className="animate-spin h-4 w-4 mr-2 inline" viewBox="0 0 24 24" fill="none">
+                  <svg aria-hidden="true" focusable="false" className="animate-spin h-4 w-4 mr-2 inline" viewBox="0 0 24 24" fill="none">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                   </svg>
-                  Signing In...
+                  <span role="status" aria-live="polite" >Signing In...</span>
                 </>
               ) : (
                 'Login'
