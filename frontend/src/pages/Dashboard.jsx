@@ -332,7 +332,7 @@ const Dashboard = () => {
                     <div className="w-px h-10 bg-white/10 hidden md:block"></div>
                     <div className="flex flex-col">
                       <div className="flex items-end gap-1 h-8">
-                        {productivityInsights.heatmap.slice(-7).map((d, i) => (
+                        {productivityInsights?.heatmap?.slice(-7)?.map((d, i) => (
                            <div key={i} className="w-1.5 bg-indigo-500 rounded-t-sm opacity-80" style={{ height: `${Math.max(15, d.value)}%` }}></div>
                         ))}
                       </div>
