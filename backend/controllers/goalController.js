@@ -4,7 +4,7 @@ import taskModel from '../models/taskModel.js';
 const normalizeGoalTitle = (title) => (title ?? '').trim().toLowerCase();
 
 // Create Goal
-const createGoal = async (req, res) => {
+const createGoal = async (req, res, next) => {
     try {
         const { title, type, description, deadline } = req.body;
         const userId = req.body.userId;
@@ -35,13 +35,12 @@ const createGoal = async (req, res) => {
         res.json({ success: true, goal: newGoal, message: 'Goal Created Successfully !' });
 
     } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
+        next(error);
     }
 };
 
 // Get All Goals
-const getGoals = async (req, res) => {
+const getGoals = async (req, res, next) => {
     try {
         const userId = req.body.userId;
         const goals = await goalModel.find({ userId });
@@ -61,13 +60,12 @@ const getGoals = async (req, res) => {
         res.json({ success: true, goals: goalsWithProgress });
 
     } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
+        next(error);
     }
 };
 
 // Update Goal
-const updateGoal = async (req, res) => {
+const updateGoal = async (req, res, next) => {
     try {
         const { goalId, title, type, description, deadline } = req.body;
         const userId = req.body.userId;
@@ -90,13 +88,12 @@ const updateGoal = async (req, res) => {
         res.json({ success: true, goal, message: 'Goal updated Successfully' });
 
     } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
+        next(error);
     }
 };
 
 // Delete Goal
-const deleteGoal = async (req, res) => {
+const deleteGoal = async (req, res, next) => {
     try {
         const { goalId } = req.body;
         const userId = req.body.userId;
@@ -113,8 +110,7 @@ const deleteGoal = async (req, res) => {
         res.json({ success: true, message: 'Goal deleted successfully' });
 
     } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
+        next(error);
     }
 };
 
