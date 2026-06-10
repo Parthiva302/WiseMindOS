@@ -4,7 +4,6 @@ import {AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, Check, Shield, Sparkles, Zap } from 'lucide-react';
 import Card from '../components/Card';
 import GradientButton from '../components/GradientButton';
-import { Sparkles, ArrowRight, Check } from "lucide-react";
 
 const plans = [
   {

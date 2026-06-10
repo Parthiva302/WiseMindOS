@@ -749,7 +749,7 @@ export const AppProvider = ({ children }) => {
         const completedMinutes =
           completedTime.getHours() * 60 + completedTime.getMinutes();
 
-        const [eh, em] = task.endTime.split(':').map(Number);
+        const [eh, em] = (task.endTime || "00:00").split(':').map(Number);
         const endMinutes = eh * 60 + em;
 
         if (completedMinutes <= endMinutes) {
