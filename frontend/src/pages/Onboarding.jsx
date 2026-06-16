@@ -116,6 +116,28 @@ const Onboarding = () => {
     setCurrentExecution({ type: 'task', title: '', deadline: '' });
   };
 
+  const handleRemoveExecution = (goalId, type, itemId) => {
+    setExecutionMap(prevMap => {
+      const goalMap = prevMap[goalId];
+      if (!goalMap) return prevMap;
+
+      const key = type === 'project' ? 'projects' : 'tasks';
+      const updatedGoalMap = {
+        ...goalMap,
+        [key]: goalMap[key].filter(item => item.id !== itemId)
+      };
+
+      const newMap = { ...prevMap, [goalId]: updatedGoalMap };
+
+      // Remove the goal entry entirely if it no longer has any execution items
+      if (updatedGoalMap.projects.length === 0 && updatedGoalMap.tasks.length === 0) {
+        delete newMap[goalId];
+      }
+
+      return newMap;
+    });
+  };
+
   const handleStep2Next = () => {
     setStep(3);
   };
@@ -456,7 +478,22 @@ text-white rounded-lg
                             <div className="mb-2">
                               <p className="text-xs text-gray-500 mb-1">Projects:</p>
                               {map.projects.map(p => (
-                                <p key={p.id} className="text-sm text-gray-300 ml-3">• {p.title}</p>
+                                <div
+                                  key={p.id}
+                                  className="flex items-center justify-between ml-3"
+                                  data-testid={`mapped-project-${p.id}`}
+                                >
+                                  <p className="text-sm text-gray-300">• {p.title}</p>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveExecution(goal.id, 'project', p.id)}
+                                    className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                                    aria-label={`Remove project ${p.title}`}
+                                    data-testid={`remove-project-${p.id}`}
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
                               ))}
                             </div>
                           )}
@@ -464,7 +501,22 @@ text-white rounded-lg
                             <div>
                               <p className="text-xs text-gray-500 mb-1">Tasks:</p>
                               {map.tasks.map(t => (
-                                <p key={t.id} className="text-sm text-gray-300 ml-3">• {t.title}</p>
+                                <div
+                                  key={t.id}
+                                  className="flex items-center justify-between ml-3"
+                                  data-testid={`mapped-task-${t.id}`}
+                                >
+                                  <p className="text-sm text-gray-300">• {t.title}</p>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveExecution(goal.id, 'task', t.id)}
+                                    className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                                    aria-label={`Remove task ${t.title}`}
+                                    data-testid={`remove-task-${t.id}`}
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
                               ))}
                             </div>
                           )}
