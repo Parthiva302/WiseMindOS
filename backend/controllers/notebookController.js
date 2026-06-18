@@ -114,8 +114,8 @@ export const deleteNotebook = async (req, res) => {
       return res.json({ success: false, message: "Notebook not found" });
     }
 
-    // delete all pages of this notebook
-    await pageModel.deleteMany({ notebookId });
+    // delete all pages of this notebook (scoped to authenticated user)
+    await pageModel.deleteMany({ notebookId, userId });
 
     await reorderNotebooks(userId);
 

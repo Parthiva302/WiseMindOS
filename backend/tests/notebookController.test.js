@@ -124,8 +124,12 @@ test('deleteNotebook reorders remaining notebooks after any notebook is removed'
     ];
     let bulkOps;
 
+    let pageDeleteFilter;
+
     replaceProperty(notebookModel, 'findOneAndDelete', async () => deletedNotebook);
-    replaceProperty(pageModel, 'deleteMany', async () => {});
+    replaceProperty(pageModel, 'deleteMany', async (filter) => {
+        pageDeleteFilter = filter;
+    });
     replaceProperty(notebookModel, 'find', () => ({
         sort: async () => remainingNotebooks.map((notebook, index) => ({
             ...notebook,
@@ -145,14 +149,49 @@ test('deleteNotebook reorders remaining notebooks after any notebook is removed'
 
     assert.equal(res.body.success, true);
     assert.equal(res.body.notebooks.length, 3);
+    assert.deepEqual(pageDeleteFilter, {
+        notebookId: 'notebook-2',
+        userId: 'user-1',
+    });
     assert.deepEqual(bulkOps, expectedBulkOps(remainingNotebooks));
+});
+
+test('deleteNotebook only deletes pages owned by the authenticated user', async () => {
+    const res = mockResponse();
+    let pageDeleteFilter;
+
+    replaceProperty(notebookModel, 'findOneAndDelete', async () => ({
+        _id: 'notebook-1',
+    }));
+    replaceProperty(pageModel, 'deleteMany', async (filter) => {
+        pageDeleteFilter = filter;
+    });
+    mockFindNotebooks([]);
+    replaceProperty(notebookModel, 'bulkWrite', async () => {});
+
+    await deleteNotebook({
+        body: {
+            notebookId: 'notebook-1',
+            userId: 'user-42',
+        },
+    }, res);
+
+    assert.equal(res.body.success, true);
+    assert.deepEqual(pageDeleteFilter, {
+        notebookId: 'notebook-1',
+        userId: 'user-42',
+    });
 });
 
 test('deleteNotebook does not reorder when the notebook does not exist', async () => {
     const res = mockResponse();
     let bulkWriteCalled = false;
+    let deleteManyCalled = false;
 
     replaceProperty(notebookModel, 'findOneAndDelete', async () => null);
+    replaceProperty(pageModel, 'deleteMany', async () => {
+        deleteManyCalled = true;
+    });
     replaceProperty(notebookModel, 'bulkWrite', async () => {
         bulkWriteCalled = true;
     });
@@ -168,5 +207,6 @@ test('deleteNotebook does not reorder when the notebook does not exist', async (
         success: false,
         message: 'Notebook not found',
     });
+    assert.equal(deleteManyCalled, false);
     assert.equal(bulkWriteCalled, false);
 });
