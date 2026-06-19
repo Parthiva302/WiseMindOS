@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test, { afterEach } from 'node:test';
 
-import { deletePage, reorderNotebookPages } from '../controllers/pageController.js';
+import { deletePage, reorderNotebookPages, updatePage } from '../controllers/pageController.js';
 import notebookModel from '../models/notebookModel.js';
 import pageModel from '../models/pageModel.js';
 
@@ -192,6 +192,125 @@ test('reorderNotebookPages renames all pages to sequential titles', async () => 
             },
         },
     ]);
+});
+
+test('updatePage returns validation error when content is missing', async () => {
+    const res = mockResponse();
+    let findOneAndUpdateCalled = false;
+
+    replaceProperty(pageModel, 'findOneAndUpdate', async () => {
+        findOneAndUpdateCalled = true;
+    });
+
+    await updatePage({
+        body: {
+            pageId: 'page-1',
+            userId: 'user-1',
+        },
+    }, res);
+
+    assert.deepEqual(res.body, {
+        success: false,
+        message: 'Content is required',
+    });
+    assert.equal(findOneAndUpdateCalled, false);
+});
+
+test('updatePage returns validation error when content is null', async () => {
+    const res = mockResponse();
+    let findOneAndUpdateCalled = false;
+
+    replaceProperty(pageModel, 'findOneAndUpdate', async () => {
+        findOneAndUpdateCalled = true;
+    });
+
+    await updatePage({
+        body: {
+            pageId: 'page-1',
+            content: null,
+            userId: 'user-1',
+        },
+    }, res);
+
+    assert.deepEqual(res.body, {
+        success: false,
+        message: 'Content is required',
+    });
+    assert.equal(findOneAndUpdateCalled, false);
+});
+
+test('updatePage returns validation error when content is not a string', async () => {
+    const res = mockResponse();
+    let findOneAndUpdateCalled = false;
+
+    replaceProperty(pageModel, 'findOneAndUpdate', async () => {
+        findOneAndUpdateCalled = true;
+    });
+
+    await updatePage({
+        body: {
+            pageId: 'page-1',
+            content: 12345,
+            userId: 'user-1',
+        },
+    }, res);
+
+    assert.deepEqual(res.body, {
+        success: false,
+        message: 'Content must be a string',
+    });
+    assert.equal(findOneAndUpdateCalled, false);
+});
+
+test('updatePage returns validation error when content exceeds 10KB', async () => {
+    const res = mockResponse();
+    let findOneAndUpdateCalled = false;
+
+    replaceProperty(pageModel, 'findOneAndUpdate', async () => {
+        findOneAndUpdateCalled = true;
+    });
+
+    await updatePage({
+        body: {
+            pageId: 'page-1',
+            content: 'x'.repeat(10001),
+            userId: 'user-1',
+        },
+    }, res);
+
+    assert.deepEqual(res.body, {
+        success: false,
+        message: 'Max 10KB content allowed',
+    });
+    assert.equal(findOneAndUpdateCalled, false);
+});
+
+test('updatePage persists valid content', async () => {
+    const res = mockResponse();
+    const updatedPage = {
+        _id: 'page-1',
+        content: 'Hello world',
+    };
+    let updatePayload;
+
+    replaceProperty(pageModel, 'findOneAndUpdate', async (_filter, update) => {
+        updatePayload = update;
+        return updatedPage;
+    });
+
+    await updatePage({
+        body: {
+            pageId: 'page-1',
+            content: 'Hello world',
+            userId: 'user-1',
+        },
+    }, res);
+
+    assert.deepEqual(res.body, {
+        success: true,
+        page: updatedPage,
+    });
+    assert.equal(updatePayload.content, 'Hello world');
 });
 
 test('deletePage does not reorder when the page does not exist', async () => {
