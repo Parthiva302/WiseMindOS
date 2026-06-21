@@ -68,15 +68,13 @@ function App() {
             <Route path="/future-twin" element={<FutureTwin />} />
             <Route path="/future" element={<FutureTwin />} />
             <Route path="/library" element={<Library />} />
-            <Route path="*" element={<NotFound />} />
-
           </Route>
 
           {/* Fallback */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFound/>} />
         </Routes>
+        <ScrollToTop />
     </ErrorBoundary>
-    <ScrollToTop />
   );
 }
 
