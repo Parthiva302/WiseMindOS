@@ -32,7 +32,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import ErrorPage from './pages/ErrorPage';
 import CustomCursor from './components/CustomCursor';
 import ScrollToTop from "./components/ScrollToTop";
-import NotFound from "../pages/NotFound";
+import NotFound from "./pages/NotFound";
 
 function App() {
   const { token } = useApp();
