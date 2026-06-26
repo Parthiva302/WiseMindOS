@@ -22,7 +22,7 @@ const AppLayout = () => {
 
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col min-w-0 sm:pl-64 pb-20 sm:pb-0">
-          <main className="flex-1 p-6 overflow-y-auto">
+          <main className="flex-1 p-6">
             <Outlet />
           </main>
         </div>

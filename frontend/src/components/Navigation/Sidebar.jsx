@@ -97,18 +97,18 @@ const Sidebar = () => {
   return (
     <>
       <aside 
-        className="hidden sm:flex flex-col w-64 h-screen fixed left-0 top-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 select-none z-30"
+        className="hidden sm:flex flex-col w-64 h-screen fixed left-0 top-0 bg-black/40 backdrop-blur-xl border-r border-white/10 text-gray-300 select-none z-30"
         aria-label="Desktop sidebar navigation"
       >
         {/* Brand / Logo */}
-        <div className="flex items-center gap-3 px-6 h-16 border-b border-gray-200 dark:border-gray-800">
-          <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">
+        <div className="flex items-center gap-3 px-6 h-16 border-b border-white/10">
+          <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-500 bg-clip-text text-transparent">
             WiseMindOS
           </span>
         </div>
 
         {/* Navigation Items */}
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-hidden">
           {menuItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -116,10 +116,10 @@ const Sidebar = () => {
                 <NavLink
                   to={item.path}
                   className={({ isActive }) => `
-                    flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium border-l-4 nav-transition cursor-pointer
+                    flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold border-l-4 nav-transition cursor-pointer
                     ${isActive
-                      ? 'border-blue-500 bg-gray-50 dark:bg-gray-800 text-blue-500 font-semibold'
-                      : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white'
+                      ? 'border-blue-500 bg-white/5 text-blue-400'
+                      : 'border-transparent text-gray-400 hover:bg-white/5 hover:text-white'
                     }
                   `}
                 >
@@ -143,10 +143,10 @@ const Sidebar = () => {
                 <NavLink
                   to={item.path}
                   className={({ isActive }) => `
-                    flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium border-l-4 nav-transition cursor-pointer
+                    flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold border-l-4 nav-transition cursor-pointer
                     ${isActive
-                      ? 'border-blue-500 bg-gray-50 dark:bg-gray-800 text-blue-500 font-semibold'
-                      : 'border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white'
+                      ? 'border-blue-500 bg-white/5 text-blue-400'
+                      : 'border-transparent text-gray-400 hover:bg-white/5 hover:text-white'
                     }
                   `}
                 >
@@ -163,7 +163,7 @@ const Sidebar = () => {
           <div className="relative nav-item-container">
             <button
               onClick={() => setIsLogoutModalOpen(true)}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium border-l-4 border-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white nav-transition cursor-pointer text-left"
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold border-l-4 border-transparent text-gray-400 hover:bg-white/5 hover:text-white nav-transition cursor-pointer text-left"
             >
               <LogOut size={20} className="flex-shrink-0" />
               <span>Logout</span>

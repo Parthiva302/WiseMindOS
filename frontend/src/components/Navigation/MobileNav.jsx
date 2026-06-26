@@ -25,8 +25,8 @@ const MobileNav = () => {
       aria-label="Mobile navigation tab bar"
       className="
         sm:hidden fixed bottom-0 left-0 right-0 z-50
-        bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800
-        shadow-[0_-4px_12px_rgba(0,0,0,0.05)] dark:shadow-[0_-4px_12px_rgba(0,0,0,0.4)]
+        bg-black/40 backdrop-blur-xl border-t border-white/10
+        shadow-[0_-4px_12px_rgba(0,0,0,0.4)]
       "
       style={{
         paddingBottom: 'max(8px, env(safe-area-inset-bottom))'
@@ -49,7 +49,7 @@ const MobileNav = () => {
                 className={`
                   flex flex-col items-center justify-center relative
                   px-3 py-1 rounded-xl transition-all duration-200
-                  ${isActive ? 'text-blue-500 font-semibold' : 'text-gray-500 dark:text-gray-400'}
+                  ${isActive ? 'text-blue-400 font-semibold' : 'text-gray-400'}
                 `}
                 whileTap={{ scale: 0.95 }}
               >
@@ -58,7 +58,7 @@ const MobileNav = () => {
                 {isActive && (
                   <Motion.div
                     layoutId="mobile-nav-pill"
-                    className="absolute -bottom-1 w-8 h-[2px] bg-blue-500 rounded-full"
+                    className="absolute -bottom-1 w-8 h-[2px] bg-blue-400 rounded-full"
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
